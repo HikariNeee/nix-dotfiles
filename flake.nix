@@ -45,6 +45,7 @@
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+              home-manager.extraSpecialArgs = { rootPath = ./.; };
               home-manager.users.hikari = {
                 imports = [
                   ./home.nix

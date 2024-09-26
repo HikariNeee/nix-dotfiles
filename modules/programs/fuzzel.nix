@@ -13,7 +13,7 @@
         tabs = 2;
         width = 40;
       };
-    catppuccin.enable = true;
     };
+    catppuccin.enable = true;
   };
 }

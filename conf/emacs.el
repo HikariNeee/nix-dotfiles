@@ -4,6 +4,7 @@
 
 ;; PACKAGES
 (use-package rainbow-delimiters
+  :defer t
   :ensure t)
 
 (use-package which-key
@@ -22,11 +23,11 @@
 
 
 (use-package eldoc-box
-  :defer t
   :ensure t
   :init (eldoc-box-hover-mode))
 
 (use-package undo-fu
+  :defer t
   :ensure t)
 
 (use-package corfu 
@@ -81,6 +82,7 @@
 
 (use-package vertico
   :ensure t
+  :defer t
   :hook
   (after-init . vertico-mode))
 
@@ -91,7 +93,7 @@
 
 (use-package consult
   :ensure t
-  :demand t
+  :defer t
   :bind (
 	 ("C-c M-x"  .  consult-mode-command)
 	 ("C-x b"    .  consult-buffer)
@@ -109,11 +111,13 @@
 
 (use-package marginalia
   :ensure t
+  :defer t
   :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
   :hook (after-init . marginalia-mode))
 
 
 (use-package nerd-icons
+  :defer t
   :ensure t)
 
 
@@ -125,6 +129,7 @@
   (moody-replace-vc-mode))
 
 (use-package exec-path-from-shell
+  :defer t
   :ensure t)
 
 
@@ -157,6 +162,7 @@
 
 (use-package treesit-auto
   :ensure t
+  :defer t
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -164,6 +170,7 @@
   (global-treesit-auto-mode))
 
 (use-package yasnippet
+  :defer t
   :ensure t)
 
 (use-package markdown-mode

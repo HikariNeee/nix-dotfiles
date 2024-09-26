@@ -15,7 +15,18 @@
   imports = [
     ./hardware.nix
   ];
-  nixpkgs.overlays = [ (import inputs.emacs-overlay) ];
+  nixpkgs.overlays = [ 
+    (import inputs.emacs-overlay) 
+  ];
+  
+  services.emacs.package = (pkgs.emacsWithPackagesFromUsePackage {
+    config = ./conf/emacs.el;
+    defaultInitFile = true;
+    package = pkgs.emacs-pgtk;
+  });
+
+  services.emacs.enable = true;
+	
   nix = {
     package = pkgs.nixVersions.latest;
     gc = {
@@ -64,15 +75,14 @@
   ];
 
   console.catppuccin.enable = true;
-
+   
   networking = {
     hostName = "Tsu";
     hostId = "abcd1234";
 
-    dhcpcd = {
+    networkmanager = {
       enable = true;
-      wait = "background";
-      extraConfig = "noarp";
+      dhcp = "internal";
     };
 
     nameservers = [
@@ -96,16 +106,9 @@
     variables = {
       NIXOS_OZONE_WL = "1";
     };
-
-    memoryAllocator.provider = "scudo";
-    
     systemPackages = with pkgs; [
       wget
-      flatpak
-      chezmoi
-      git
       swaybg
-      dunst
       i3bar-river
       river
       fish
@@ -169,10 +172,13 @@
     };
   };
 
-  systemd.services = {
-    NetworkManager-wait-online.enable = false;
-    dnscrypt-proxy2.serviceConfig = {
-      StateDirectory = "dnscrypt-proxy";
-    };
-  };
+  systemd = {
+    coredump.enable = false;
+    services = {
+      NetworkManager-wait-online.enable = false;
+      dnscrypt-proxy2.serviceConfig = {
+        StateDirectory = "dnscrypt-proxy";
+     };
+   };
+ };
 }

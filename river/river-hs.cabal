@@ -1,0 +1,43 @@
+cabal-version:      3.4
+name:               river-hs
+version:            0.1.0.0
+synopsis:           RiverWM config in Haskell
+-- description:
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             HikariNee
+maintainer:         quelln@protonmail.com
+-- copyright:
+category:           Wayland/Compositors
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+-- extra-source-files:
+
+common warnings
+    ghc-options: -Wall -O2 -threaded
+
+library
+    import:           warnings
+    exposed-modules:  River
+    build-depends:    base,typed-process,split
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable river-hs
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:
+        base,
+        river-hs,
+        directory
+
+    hs-source-dirs:   app
+    default-language: Haskell2010
+
+test-suite tests
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          Tests.hs
+    build-depends:    base ^>=4.18.2.1,river-hs,tasty,tasty-hunit,tasty-rerun
+    hs-source-dirs:   tests
+    default-language: Haskell2010
