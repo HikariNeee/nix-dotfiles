@@ -12,7 +12,7 @@
   catppuccin.flavor = "mocha";
   catppuccin.pointerCursor.enable = true;
  
-  imports = [ ./modules ];
+  imports = [ ../. ];
 
   programs.home-manager.enable = true;
   programs.git = {
