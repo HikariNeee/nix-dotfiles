@@ -1,0 +1,24 @@
+#+title: river-hs
+#+author: Hikari
+
+
+* Dotfiles
+These are my dotfiles for my nixOS setup, using riverWM configured in haskell through [[https://codeberg.org/Hikari/river-hs][river-hs]].
+
+** Necessary stuff
+ It might be needed to run
+ #+BEGIN_SRC bash
+ dbus-update-activation-environment WAYLAND_DISPLAY
+ #+END_SRC
+ so dunst finds the WAYLAND_DISPLAY variable correctly.
+
+
+** Information
+This is a flake based setup, most things have been split into modules and home-manager has been used (though, I am contemplating a switch to the much simpler [[https://github.com/viperML/wrapper-manager][wrapper-mananger]]).
+This also houses my emacs config which can be found in [[./conf/emacs.el]], it uses Nix as its package manager instead of Elpaca or Straight.el
+
+
+** LICENSE
+This is licensed under the terms of the GPLv2 license.
+
+
