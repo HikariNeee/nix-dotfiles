@@ -39,7 +39,7 @@
             inherit inputs self;
           };
           modules = [
-            ./config.nix
+            ./modules/base/config.nix
             catppuccin.nixosModules.catppuccin            
             home-manager.nixosModules.home-manager
             {
@@ -48,7 +48,7 @@
               home-manager.extraSpecialArgs = { rootPath = ./.; };
               home-manager.users.hikari = {
                 imports = [
-                  ./home.nix
+                  ./modules/base/home.nix
                   catppuccin.homeManagerModules.catppuccin
                   arkenfox.hmModules.arkenfox
                 ];
