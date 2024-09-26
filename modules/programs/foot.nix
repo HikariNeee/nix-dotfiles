@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   programs.foot = {
     enable = true;
     catppuccin.enable = true;
@@ -15,4 +16,3 @@
     };
   };
 }
-

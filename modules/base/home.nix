@@ -11,7 +11,7 @@
 
   catppuccin.flavor = "mocha";
   catppuccin.pointerCursor.enable = true;
- 
+
   imports = [ ../. ];
 
   programs.home-manager.enable = true;
@@ -21,13 +21,11 @@
     userEmail = "quelln@protonmail.com";
   };
 
-
   programs.fish = {
     enable = true;
     preferAbbrs = true;
     catppuccin.enable = true;
   };
-
 
   services.dunst = {
     enable = true;
@@ -47,7 +45,7 @@
       };
     };
   };
-  
+
   home.packages = with pkgs; [
     gcc
     htop

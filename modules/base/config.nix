@@ -15,18 +15,20 @@
   imports = [
     ./hardware.nix
   ];
-  nixpkgs.overlays = [ 
-    (import inputs.emacs-overlay) 
+  nixpkgs.overlays = [
+    (import inputs.emacs-overlay)
   ];
-  
-  services.emacs.package = (pkgs.emacsWithPackagesFromUsePackage {
-    config = ./conf/emacs.el;
-    defaultInitFile = true;
-    package = pkgs.emacs-pgtk;
-  });
+
+  services.emacs.package = (
+    pkgs.emacsWithPackagesFromUsePackage {
+      config = ./conf/emacs.el;
+      defaultInitFile = true;
+      package = pkgs.emacs-pgtk;
+    }
+  );
 
   services.emacs.enable = true;
-	
+
   nix = {
     package = pkgs.nixVersions.latest;
     gc = {
@@ -71,11 +73,11 @@
     "tsc=reliable"
     "loglevel=3"
     "intel_pstate=disable"
-    "page_alloc.shuffle=1"    
+    "page_alloc.shuffle=1"
   ];
 
   console.catppuccin.enable = true;
-   
+
   networking = {
     hostName = "Tsu";
     hostId = "abcd1234";
@@ -178,7 +180,7 @@
       NetworkManager-wait-online.enable = false;
       dnscrypt-proxy2.serviceConfig = {
         StateDirectory = "dnscrypt-proxy";
-     };
-   };
- };
+      };
+    };
+  };
 }

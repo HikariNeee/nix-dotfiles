@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {  
+}:
+{
   programs.i3bar-river = {
     enable = true;
     settings = {

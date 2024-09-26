@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   programs.firefox = {
     enable = true;
     arkenfox.enable = true;

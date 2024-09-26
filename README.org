@@ -6,7 +6,7 @@
 These are my dotfiles for my nixOS setup, using riverWM configured in haskell through [[https://codeberg.org/Hikari/river-hs][river-hs]].
 
 ** Necessary stuff
- It might be needed to run
+ You might need to run
  #+BEGIN_SRC bash
  dbus-update-activation-environment WAYLAND_DISPLAY
  #+END_SRC

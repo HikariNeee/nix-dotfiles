@@ -27,7 +27,7 @@
       pkgs = import nixpkgs {
         inherit system overlays;
         config.allowUnfree = true;
-       };
+      };
       inherit (nixpkgs) lib;
     in
     {
@@ -40,12 +40,14 @@
           };
           modules = [
             ./modules/base/config.nix
-            catppuccin.nixosModules.catppuccin            
+            catppuccin.nixosModules.catppuccin
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { rootPath = ./.; };
+              home-manager.extraSpecialArgs = {
+                rootPath = ./.;
+              };
               home-manager.users.hikari = {
                 imports = [
                   ./modules/base/home.nix
