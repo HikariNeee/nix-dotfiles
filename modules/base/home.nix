@@ -48,6 +48,8 @@
 
   home.packages = with pkgs; [
     gcc
+    ripgrep
+    fd
     htop
     sbcl
     hunspell

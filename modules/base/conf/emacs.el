@@ -7,6 +7,12 @@
   :defer t
   :ensure t)
 
+(use-package projectile
+  :defer t
+  :ensure t
+  :init (projectile-mode)
+  :bind (("C-c p" . projectile-command-map)))
+
 (use-package which-key
   :diminish which-key-mode
   :ensure t
@@ -346,6 +352,9 @@
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook 'org-indent-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
+
+;; PROJECTILE
+(setq projectile-project-search-path '(("~/opt" . 1)))
 
 
 ;; FONT
