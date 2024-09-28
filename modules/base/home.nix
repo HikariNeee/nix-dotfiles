@@ -57,5 +57,6 @@
     enchant
     pkg-config
     nurl
+    lagrange
   ];
 }

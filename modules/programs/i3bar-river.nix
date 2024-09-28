@@ -5,10 +5,32 @@
   ...
 }:
 {
+  programs.i3status-rust = {
+    enable = true;
+    bars.top = {
+      theme = "ctp-mocha";
+      icons = "awesome6";
+      blocks = [
+             {
+               block = "uptime";
+             }
+             {
+               block = "cpu";
+               interval = 5;
+             }
+             {
+               block = "time";
+               interval = 60;
+               format = " $timestamp.datetime(f:'%a %d/%m %R') ";
+             }
+          ];      
+    };
+  };
+
   programs.i3bar-river = {
     enable = true;
     settings = {
-      command = "py3status";
+      command = "i3status-rs ~/.config/i3status-rust/config-top.toml";
       background = "#1e1e2eff";
       color = "#cdd6f4ff";
       separator = "#9a8a62ff";
@@ -28,9 +50,9 @@
       margin_left = 8;
       margin_right = 8;
       separator_width = 0;
-      tags_r = 10;
+      tags_r = 6;
       tags_padding = 15.0;
-      blocks_r = 20;
+      blocks_r = 6;
       blocks_overlap = 0.0;
       position = "top";
       hide_inactive_tags = true;

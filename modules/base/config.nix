@@ -19,15 +19,27 @@
     (import inputs.emacs-overlay)
   ];
 
-  services.emacs.package = (
-    pkgs.emacsWithPackagesFromUsePackage {
-      config = ./conf/emacs.el;
-      defaultInitFile = true;
-      package = pkgs.emacs-pgtk;
-    }
-  );
+  services.emacs = {
+    package = (
+      pkgs.emacsWithPackagesFromUsePackage {
+        config = ./conf/emacs.el;
+        defaultInitFile = true;
+        package = pkgs.emacs-pgtk;
+        extraEmacsPackages = (epkgs: 
+          (with epkgs; [
+             (treesit-grammars.with-grammars (grammars: with grammars; [
+                tree-sitter-nix
+                tree-sitter-commonlisp
+                tree-sitter-haskell
+                tree-sitter-python
+            ]))
+          ])
+        );
+      }
+    );
 
-  services.emacs.enable = true;
+    enable = true;
+  };
 
   nix = {
     package = pkgs.nixVersions.latest;
@@ -117,7 +129,6 @@
       ghc
       haskellPackages.haskell-language-server
       haskellPackages.cabal-install
-      python311Packages.py3status
       grim
       slurp
       wl-clipboard
@@ -131,6 +142,7 @@
     noto-fonts
     noto-fonts-cjk
     noto-fonts-emoji
+    font-awesome
   ];
 
   system.stateVersion = "24.05"; # Did you read the comment?
