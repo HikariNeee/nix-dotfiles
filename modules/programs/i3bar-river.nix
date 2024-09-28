@@ -11,19 +11,23 @@
       theme = "ctp-mocha";
       icons = "awesome6";
       blocks = [
-             {
-               block = "uptime";
-             }
-             {
-               block = "cpu";
-               interval = 5;
-             }
-             {
-               block = "time";
-               interval = 60;
-               format = " $timestamp.datetime(f:'%a %d/%m %R') ";
-             }
-          ];      
+        {
+          block = "uptime";
+        }
+        {
+          block = "cpu";
+          interval = 5;
+        }
+        {
+          block = "load";
+          interval = 5;
+        }
+        {
+          block = "time";
+          interval = 60;
+          format = " $timestamp.datetime(f:'%a %d/%m %R') ";
+        }
+      ];
     };
   };
 

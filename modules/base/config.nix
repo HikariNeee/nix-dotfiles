@@ -25,14 +25,17 @@
         config = ./conf/emacs.el;
         defaultInitFile = true;
         package = pkgs.emacs-pgtk;
-        extraEmacsPackages = (epkgs: 
+        extraEmacsPackages = (
+          epkgs:
           (with epkgs; [
-             (treesit-grammars.with-grammars (grammars: with grammars; [
+            (treesit-grammars.with-grammars (
+              grammars: with grammars; [
                 tree-sitter-nix
                 tree-sitter-commonlisp
                 tree-sitter-haskell
                 tree-sitter-python
-            ]))
+              ]
+            ))
           ])
         );
       }
@@ -162,7 +165,6 @@
 
   services = {
     dbus.implementation = "broker";
-    openssh.enable = true;
     thermald.enable = true;
     pipewire = {
       enable = true;
