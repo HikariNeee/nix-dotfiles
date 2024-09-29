@@ -3,59 +3,45 @@
 (package-initialize)
 
 (use-package emacs
+  :hook ((prog-mode . rainbow-delimiters)
+         (after-init . global-auto-revert-mode)
+         (after-init . recentf-mode)
+         (after-init . savehist-mode))
+
+  :bind (("C-z" . undo-fu-only-undo)
+         ("C-S-z" . undo-fu-only-redo))
   :init
-  (setq eglot-sync-connect 1
-        eglot-connect-timeout 5
-        eglot-autoshutdown t
-        eglot-send-changes-idle-time 45
-        eglot-auto-display-help-buffer nil
-        eglot-events-buffer-size 0)
-  
-  (fset #'jsonrpc--log-event #'ignore)
-  (add-hook 'python-ts-mode-hook 'eglot-ensure)
-  (add-hook 'c-ts-mode-hook 'eglot-ensure)
-  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t)
-  (add-hook 'haskell-ts-mode 'prettify-symbols-mode)
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-
-  (setq completion-category-overrides '((eglot (styles orderless))
-                                        (eglot-capf (styles orderless))))
-
-  (setq eglot-workspace-configuration '((haskell (plugin
-                                                 (stan (globalOn . :json-false))
-                                                 (splice (globalOn . :json-false))
-                                                 (eval (globalOn . :json-false)))
-                                                 (formattingProvider "fourmolu"))))
-    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
   (setq native-comp-async-report-warnings-errors 'silent
         byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
-        idle-update-delay 1.0
         bidi-display-reordering 'left-to-right
         bidi-paragraph-direction 'left-to-right
         bidi-inhibit-bpa 1
         cursor-in-non-selected-windows nil
         highlight-nonselected-windows nil
         inhibit-compacting-font-caches t
-        custom-safe-themes t
-        ;; UI
-        display-time-24hr-format t
-        truncate-lines t
+        custom-safe-themes t)
+
+  (setq truncate-lines t
         fill-column 80
         line-move-visual t
         frame-resize-pixelwise t
         window-resize-pixelwise nil
-        split-width-threshold 80
-        create-lockfiles nil
+        split-width-threshold 80)
+
+  (setq create-lockfiles nil
         make-backup-files nil
-        ;; But in case the user does enable it, some sensible defaults:
-        version-control t     ; number each backup file
-        backup-by-copying t   ; instead of renaming current file (clobbers links)
-        delete-old-versions t ; clean up after itself
+        version-control t
+        backup-by-copying t
+        delete-old-versions t
         kept-old-versions 5
         kept-new-versions 5
-        backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
-        display-time-default-load-average nil
-        inhibit-startup-message t
+        backup-by-copying-when-linked t
+        backup-by-copying t
+        delete-old-versions t
+        vc-make-backup-files nil
+        backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/"))))
+
+  (setq inhibit-startup-message t
         confirm-kill-processes nil
         load-prefer-newer t
         x-select-enable-clipboard t
@@ -67,26 +53,21 @@
         whitespace-line-column nil
         rainbow-delimiters-max-face-count 5
         confirm-nonexitent-file-or-buffer nil
-        uniquify-buffer-name-style 'forward
-        mouse-yank-at-point t
-        backup-by-copying-when-linked t
-        backup-by-copying t
-        delete-old-versions t
-        vc-make-backup-files nil
+        uniquify-buffer-name-style 'forward)
+
+  (setq mouse-yank-at-point t
         resize-mini-windows 'grow-only
         fast-but-imprecise-scrolling t
-        auto-save-default t
         hscroll-margin 2
         hscroll-step 1
         scroll-conservatively 10
         scroll-margin 0
         scroll-preserve-screen-position t
         auto-window-vscroll nil
-        mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-        mouse-wheel-scroll-amount-horizontal 2
-        blink-matching-paren nil
         x-stretch-cursor nil
-        truncate-partial-width-windows nil)
+        truncate-partial-width-windows nil
+        auto-save-default t
+        auto-save-include-big-deletions t)
 
   (setq-default display-line-numbers-width 3
                 display-line-numbers-widen t
@@ -102,49 +83,65 @@
                 display-line-numbers-width 3
                 inhibit-major-mode 'fundamental-mode)
 
-  (blink-cursor-mode 0)
-  (display-battery-mode 1)
   (electric-pair-mode 1)
   (display-time-mode 1)
   (global-display-line-numbers-mode 1)
   (scroll-bar-mode 0)
   (tool-bar-mode 0)
   (menu-bar-mode 0)
-  (setq history-length 25)     ;; History Length
-  (savehist-mode 1)            ;; Save history
-  (save-place-mode 1)          ;; Save place in files
-  (delete-selection-mode 1)    ;; You can select text and delete it by typing.
-  (electric-indent-mode 1)     ;; Indents
-  (global-auto-revert-mode 1)  ;; Automatically show changes if the file has changed
-  (prettify-symbols-mode 1)    ;; Combine symbols
 
+  (setq history-length 25)
+  (savehist-mode 1)
+  (save-place-mode 1)
+  (delete-selection-mode 1)
+  (electric-indent-mode 1)
+  (global-auto-revert-mode 1)
 
   (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
   (setq undo-limit 67108864) ; 64mb.
   (setq undo-strong-limit 100663296) ; 96mb.
-  (setq undo-outer-limit 1006632960) ; 960mb.
-
-
-  (global-unset-key (kbd "C-z"))
-  (global-set-key (kbd "C-z") 'undo-fu-only-undo)
-  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
-
-
-  (setq org-agenda-files '("~/org")
-        org-log-done 'time
-        org-return-follows-link  t)
-
-  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-  (add-hook 'org-mode-hook 'org-indent-mode)
-  (add-hook 'org-mode-hook 'visual-line-mode)
-
-
-  (setq projectile-project-search-path '(("~/opt" . 1)))
+  (setq undo-outer-limit 100663296) ; 90mb.
 
   (add-to-list 'default-frame-alist '(font . "Comic Shanns Mono-12")))
 
+(use-package org
+  :hook ((org-mode  . org-indent-mode)
+         (org-mode  . visual-line-mode))
+
+  :config
+  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
+
+(use-package eglot
+ :defer t
+ :ensure t
+ :hook ((haskell-mode    . eglot-ensure)
+        (clojure-ts-mode . eglot-ensure)
+        (c-ts-mode       . eglot-ensure)
+        (python-ts-mode  . eglot-ensure))
+ :init
+  (setq eglot-sync-connect 1
+        eglot-connect-timeout 5
+        eglot-autoshutdown t
+        eglot-send-changes-idle-time 45
+        jsonrpc-event-hook nil)
+
+  (fset #'jsonrpc--log-event #'ignore)
+
+  (setq completion-category-overrides '((eglot (styles orderless))
+                                        (eglot-capf (styles orderless)))
+
+        eglot-workspace-configuration '((haskell (plugin
+                                                 (stan (globalOn . :json-false))
+                                                 (splice (globalOn . :json-false))
+                                                 (eval (globalOn . :json-false)))
+                                                 (formattingProvider "fourmolu")))))
 
 ;; PACKAGES
+;; BASICS
+(use-package eglot-booster
+        :after eglot
+        :config (eglot-booster-mode))
+
 (use-package rainbow-delimiters
   :defer t
   :ensure t)
@@ -153,7 +150,9 @@
   :defer t
   :ensure t
   :init (projectile-mode)
-  :bind (("C-c p" . projectile-command-map)))
+  :bind (("C-c p" . projectile-command-map))
+  :config
+  (setq projectile-project-search-path '(("~/opt" . 1))))
 
 (use-package which-key
   :diminish which-key-mode
@@ -172,6 +171,8 @@
 
 (use-package eldoc-box
   :ensure t
+  :defer  t
+  :hook ((eglot-managed-mode . eldoc-box-hover-mode))
   :init (eldoc-box-hover-mode))
 
 (use-package elpher
@@ -182,7 +183,7 @@
   :defer t
   :ensure t)
 
-(use-package corfu 
+(use-package corfu
   :ensure t
   :defer t
   :init (global-corfu-mode)
@@ -192,6 +193,7 @@
   (corfu-quit-at-boundary nil)
   (corfu-quit-no-match t)
   (corfu-auto t)
+  (tab-always-indent 'complete)
 
   :bind
   (:map corfu-map
@@ -205,15 +207,6 @@
    (setq completion-styles '(orderless partial-completion basic)
          completion-category-defaults nil
          completion-category-overrides nil))
-
-(use-package sly
-  :defer t
-  :ensure t)
-
-(use-package haskell-ts-mode
-  :defer t
-  :ensure t)
-
 
 (use-package gcmh
   :ensure t
@@ -238,27 +231,20 @@
   :hook
   (after-init . vertico-mode))
 
-(use-package nix-ts-mode
-  :ensure t
-  :defer t
-  :mode "\\.nix\\'")
-
 (use-package consult
   :ensure t
   :defer t
   :bind (
 	 ("C-c M-x"  .  consult-mode-command)
 	 ("C-x b"    .  consult-buffer)
-	 ("M-g g"    .  consult-goto-line)
 	 ("M-g M-g"  .  consult-goto-line)
 	 ("M-s d"    .  consult-fd)
 	 ("M-s r"    .  consult-ripgrep)
          ("C-y"      .  consult-yank-from-kill-ring)
          ("C-s"      .  consult-line)
          :map minibuffer-local-map
- 	 ("M-s" .     consult-history))
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-  :init)
+ 	 ("M-s"      .     consult-history))
+  :hook (completion-list-mode . consult-preview-at-point-mode))
 
 
 (use-package marginalia
@@ -291,8 +277,7 @@
   :init
   (use-package pyvenv
     :ensure t)
-  :config
-  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv))
+  :hook (python-ts-mode . auto-virtualenv-set-virtualenv))
 
 
 (use-package indent-guide
@@ -312,22 +297,30 @@
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
 
-(use-package treesit-auto
-  :ensure t
-  :defer t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
 (use-package yasnippet
   :defer t
   :ensure t)
 
 (use-package catppuccin-theme
+  :ensure t
+  :init
+  (setq catppuccin-flavor 'mocha)
+  (load-theme 'catppuccin :no-confirm))
+
+;; LANGUAGES
+(use-package nix-ts-mode
+  :ensure t
+  :defer t
+  :mode "\\.nix\\'")
+
+(use-package sly
+  :defer t
   :ensure t)
 
-(setq catppuccin-flavor 'mocha)
-(load-theme 'catppuccin :no-confirm)
+(use-package haskell-mode
+  :defer t
+  :ensure t)
 
+(use-package clojure-ts-mode
+  :defer t
+  :ensure t)

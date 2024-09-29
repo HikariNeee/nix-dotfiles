@@ -34,6 +34,7 @@
                 tree-sitter-commonlisp
                 tree-sitter-haskell
                 tree-sitter-python
+                tree-sitter-clojure
               ]
             ))
           ])
@@ -137,6 +138,7 @@
       wl-clipboard
       libnotify
       inputs.rbl.packages.${pkgs.stdenv.hostPlatform.system}.river-bsp-layout
+      emacs-lsp-booster
     ];
   };
 
