@@ -48,8 +48,6 @@
 
   home.packages = with pkgs; [
     gcc
-    clojure
-    clojure-lsp
     ripgrep
     fd
     htop

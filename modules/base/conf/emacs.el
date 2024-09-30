@@ -3,7 +3,7 @@
 (package-initialize)
 
 (use-package emacs
-  :hook ((prog-mode . rainbow-delimiters)
+  :hook ((prog-mode  . rainbow-delimiters-mode)
          (after-init . global-auto-revert-mode)
          (after-init . recentf-mode)
          (after-init . savehist-mode))
@@ -115,7 +115,6 @@
  :defer t
  :ensure t
  :hook ((haskell-mode    . eglot-ensure)
-        (clojure-ts-mode . eglot-ensure)
         (c-ts-mode       . eglot-ensure)
         (python-ts-mode  . eglot-ensure))
  :init
@@ -138,10 +137,6 @@
 
 ;; PACKAGES
 ;; BASICS
-(use-package eglot-booster
-        :after eglot
-        :config (eglot-booster-mode))
-
 (use-package rainbow-delimiters
   :defer t
   :ensure t)
@@ -199,6 +194,13 @@
   (:map corfu-map
 	("TAB" . corfu-next)
 	("S-TAB" . corfu-previous)))
+
+(use-package kind-icon
+  :ensure t
+  :defer t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package orderless
   :ensure t
@@ -261,10 +263,12 @@
 
 (use-package moody
   :ensure t
+  :defer t
   :config
   (moody-replace-mode-line-front-space)
   (moody-replace-mode-line-buffer-identification)
   (moody-replace-vc-mode))
+
 
 (use-package exec-path-from-shell
   :defer t
@@ -321,6 +325,3 @@
   :defer t
   :ensure t)
 
-(use-package clojure-ts-mode
-  :defer t
-  :ensure t)
