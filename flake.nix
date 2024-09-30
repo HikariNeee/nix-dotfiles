@@ -9,6 +9,7 @@
     catppuccin.url = "github:catppuccin/nix";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
     emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    impermanence.url = "github:nix-community/impermanence";
   };
 
   outputs =
@@ -20,6 +21,7 @@
       emacs-overlay,
       rbl,
       catppuccin,
+      impermanence,
     }@inputs:
     let
       system = "x86_64-linux";
@@ -41,6 +43,7 @@
           modules = [
             ./modules/base/config.nix
             catppuccin.nixosModules.catppuccin
+            impermanence.nixosModules.impermanence
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;

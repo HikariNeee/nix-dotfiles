@@ -6,7 +6,7 @@
 {
 
   imports = [
-    ./i3bar-river/i3bar-river.nix
+    ./custom/i3bar-river/i3bar-river.nix
     ./programs/firefox.nix
     ./programs/foot.nix
     ./programs/fuzzel.nix

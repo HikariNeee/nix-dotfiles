@@ -79,6 +79,18 @@
   boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
   boot.loader.grub.splashImage = null;
   boot.tmp.cleanOnBoot = true;
+  boot.initrd.systemd.enable = true;
+
+  boot.initrd.systemd.services.rollback = {
+    description = "rollback root";
+    wantedBy = [ "initrd.target" ];
+    after = [ "zfs-import.target" ];
+    before = [ "sysroot.mount" ];
+    unitConfig.DefaultDependencies = "no";
+    serviceConfig.type = "oneshot";
+    path = with pkgs; [ zfs ];
+    script = "zfs rollback -r zhika/zroot@blank";
+  };
 
   boot.kernelParams = [
     "cgroup_no_v1=all"
@@ -90,6 +102,7 @@
     "loglevel=3"
     "intel_pstate=disable"
     "page_alloc.shuffle=1"
+    "elevator=none"
   ];
 
   console.catppuccin.enable = true;
@@ -112,10 +125,17 @@
   time.timeZone = "Asia/Kolkata";
 
   i18n.defaultLocale = "en_GB.UTF-8";
-
-  users.users.hikari = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
+  
+  users.mutableUsers = false;
+  users.users = {
+    root = {
+      hashedPasswordFile = "/persist/passwords/root";
+    };
+    hikari = {
+      isNormalUser = true;
+      extraGroups = [ "wheel" ];
+      hashedPasswordFile = "/persist/passwords/hikari";
+   };
   };
 
   hardware.graphics.enable = true;
@@ -139,8 +159,37 @@
       wl-clipboard
       libnotify
       inputs.rbl.packages.${pkgs.stdenv.hostPlatform.system}.river-bsp-layout
-      emacs-lsp-booster
     ];
+
+    persistence."/persist" = {
+      enable = true;  # NB: Defaults to true, not needed
+      hideMounts = true;
+      directories = [
+        "/var/log"
+        "/var/lib/nixos"
+        "/var/lib/systemd"
+      ];
+      files = [
+        "/etc/machine-id"
+        "/etc/zfs/zpool.cache"
+      ];
+      users.hikari = {
+        directories = [
+          "opt"  
+          "Downloads"
+          "Music"
+          "Pictures"
+          "Documents"
+          "Videos"
+          { directory = ".ssh"; mode = "0700"; }
+          { directory = ".config/river"; mode = "0700"; }
+          { directory = ".mozilla/firefox"; mode = "0700"; }
+          { directory = ".local/share/fonts"; mode = "0700"; }
+          { directory = "sysflake"; mode = "0700"; }
+          { directory = ".config/gtk-3.0"; mode = "0700"; }
+        ];
+      };
+    };
   };
 
   fonts.packages = with pkgs; [
@@ -173,6 +222,9 @@
       enable = true;
       pulse.enable = true;
     };
+#    zfs = {
+#      autoSnapshot.enable = true;
+#    };
     dnscrypt-proxy2 = {
       enable = true;
       settings = {
