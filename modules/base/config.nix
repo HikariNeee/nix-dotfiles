@@ -15,18 +15,18 @@
   imports = [
     ./hardware.nix
   ];
+
+  
   nixpkgs.overlays = [
     (import inputs.emacs-overlay)
   ];
 
   services.emacs = {
-    package = (
-      pkgs.emacsWithPackagesFromUsePackage {
-        config = ./conf/emacs.el;
+    package = pkgs.emacsWithPackagesFromUsePackage {
+        config = ../conf/emacs.el;
         defaultInitFile = true;
         package = pkgs.emacs-pgtk;
-        extraEmacsPackages = (
-          epkgs:
+        extraEmacsPackages = epkgs:
           (with epkgs; [
             (treesit-grammars.with-grammars (
               grammars: with grammars; [
@@ -37,10 +37,8 @@
                 tree-sitter-clojure
               ]
             ))
-          ])
-        );
-      }
-    );
+          ]);
+      };
 
     enable = true;
   };
@@ -54,7 +52,7 @@
     };
     daemonCPUSchedPolicy = "idle";
     daemonIOSchedClass = "idle";
-
+    registry = lib.mapAttrs (_: flake: {inherit flake; } ) inputs;
     settings = {
       auto-optimise-store = true;
       keep-outputs = true;
@@ -105,12 +103,11 @@
     "elevator=none"
   ];
 
-  console.catppuccin.enable = true;
 
   networking = {
     hostName = "Tsu";
     hostId = "abcd1234";
-
+    nftables.enable = true;
     networkmanager = {
       enable = true;
       dhcp = "internal";
@@ -148,7 +145,6 @@
     systemPackages = with pkgs; [
       wget
       swaybg
-      i3bar-river
       river
       fish
       ghc
@@ -159,6 +155,24 @@
       wl-clipboard
       libnotify
       inputs.rbl.packages.${pkgs.stdenv.hostPlatform.system}.river-bsp-layout
+      doas-sudo-shim # for nixos-rebuild --use-remote-sudo
+      gcc
+      ripgrep
+      fd
+      htop
+      sbcl
+      hunspell
+      hunspellDicts.en_GB-ize
+      enchant
+      pkg-config
+      nurl
+      firefox
+      (inputs.wrapper-manager.lib.build {
+         inherit pkgs;
+         modules = [
+           ../.
+         ];
+      })
     ];
 
     persistence."/persist" = {
@@ -222,9 +236,6 @@
       enable = true;
       pulse.enable = true;
     };
-#    zfs = {
-#      autoSnapshot.enable = true;
-#    };
     dnscrypt-proxy2 = {
       enable = true;
       settings = {

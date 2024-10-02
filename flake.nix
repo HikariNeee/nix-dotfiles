@@ -2,26 +2,21 @@
   description = "flake setup :D";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    home-manager.url = "github:nix-community/home-manager";
-    arkenfox.url = "github:dwarfmaster/arkenfox-nixos";
     rbl.url = "github:areif-dev/river-bsp-layout";
-    catppuccin.url = "github:catppuccin/nix";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
     emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.url = "github:nix-community/impermanence";
+    wrapper-manager.url = "github:ViperML/wrapper-manager";
   };
 
   outputs =
     {
       self,
       nixpkgs,
-      home-manager,
-      arkenfox,
       emacs-overlay,
       rbl,
-      catppuccin,
       impermanence,
+      wrapper-manager,
     }@inputs:
     let
       system = "x86_64-linux";
@@ -42,23 +37,7 @@
           };
           modules = [
             ./modules/base/config.nix
-            catppuccin.nixosModules.catppuccin
             impermanence.nixosModules.impermanence
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = {
-                rootPath = ./.;
-              };
-              home-manager.users.hikari = {
-                imports = [
-                  ./modules/base/home.nix
-                  catppuccin.homeManagerModules.catppuccin
-                  arkenfox.hmModules.arkenfox
-                ];
-              };
-            }
           ];
         };
       };
