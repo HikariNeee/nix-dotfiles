@@ -19,7 +19,7 @@ initialKeymap =
   , (R.riverNormalMap R.SA "L" $ R.rMove R.Right "100")
   , (R.riverNormalMap R.SA "J" $ R.rMove R.Down "100")
   , (R.riverNormalMap R.SA "K" $ R.rMove R.Up "100")
-  , (R.riverNormalMap R.Super "Print" $ R.rSpawn "'grim -g \"$(slurp)\" -| wl-copy && notify-send \"Screenshot Clipped\"'")
+  , (R.riverNormalMap R.Super "Print" $ R.rSpawn "'grim -g \"$(slurp -d)\" - | wl-copy -t image/png && notify-send \"Screenshot Clipped\"'")
   , (R.riverNormalMap R.Super "X" $ R.rSpawn "fuzzel")
   ]
 

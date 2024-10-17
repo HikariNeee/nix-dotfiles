@@ -18,4 +18,4 @@ interval = 60
 icons = "awesome6"
 
 [theme]
-theme = "ctp-mocha"
+theme = "gruvbox-dark"
