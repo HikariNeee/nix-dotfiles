@@ -1,3 +1,45 @@
+(defvar elpaca-installer-version 0.7)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                 ,@(when-let ((depth (plist-get order :depth)))
+                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                 ,(plist-get order :repo) ,repo))))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca elpaca-use-package
+  (elpaca-use-package-mode))
+
 (use-package emacs
   :hook ((after-init    . global-auto-revert-mode)
          (after-init    . recentf-mode)
@@ -29,7 +71,7 @@
     (setq undo-strong-limit (* 96 1024 1024))
     (setq undo-outer-limit (* 90 1024 1024))
 
-    (add-to-list 'default-frame-alist '(font . "Comic Shanns Mono-12"))
+    (add-to-list 'default-frame-alist '(font . "Rec Mono Casual-12"))
     (setq fill-column 80)
     (setq frame-resize-pixelwise t)
     (setq split-width-threshold 80)
@@ -56,10 +98,12 @@
     (setq indent-tabs-mode nil)
     (setq tab-width 2)
 
+    (setq treesit-font-lock-level 4)
     (setq inhibit-startup-echo-area-message (user-login-name))
     (setq tab-always-indent 'complete)
     (setq read-extended-command-predicate #'command-completion-default-include-p))
 
+    (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -73,6 +117,20 @@
           ("C-M-$" . jinx-languages)))
 
 
+(use-package flymake-collection 
+  :ensure t 
+  :hook ((after-init . flymake-collection-hook-setup) 
+         (emacs-lisp-mode . flymake-mode)))
+
+(use-package treesit-auto
+  :ensure  t
+  :defer   t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
 (use-package rainbow-delimiters
    :ensure t
    :defer  t
@@ -84,16 +142,9 @@
    :defer  t)
 
 (use-package project
-   :ensure t
    :defer  t
    :config
    (setq project-vc-extra-root-markers '(".project.el" ".projectile" )))
-
-(use-package eldoc-box
-   :ensure t
-   :defer  t
-   :hook ((eglot-managed-mode . eldoc-box-hover-mode))
-   :init (eldoc-box-hover-mode))
 
 (use-package undo-fu
    :ensure t
@@ -106,11 +157,15 @@
 (use-package corfu
    :ensure t
    :defer  t
-   :config
-   (setq corfu-auto 1)
-   (setq corfu-preselect 'prompt)
-   (setq corfu-cycle t)
-   :init (global-corfu-mode))
+   :custom
+   (corfu-auto t)
+   (corfu-preselect 'prompt)
+   (corfu-cycle t)
+   (corfu-popupinfo-delay '(0.8 . 0.8))
+ 
+   :init
+   (global-corfu-mode)
+   (corfu-popupinfo-mode))
 
 (use-package kind-icon
    :ensure t
@@ -129,17 +184,10 @@
    :defer  t
    :init (marginalia-mode))
 
-(use-package moody
-   :ensure t
+(use-package modusregel
+   :ensure (:host github :repo "jjba23/modusregel" :branch "trunk")
    :config
-   (moody-replace-mode-line-front-space)
-   (moody-replace-mode-line-buffer-identification)
-   (moody-replace-vc-mode))
-
-(use-package beacon
-   :ensure t
-   :defer  t
-   :init (beacon-mode 1))
+   (setq-default mode-line-format modusregel-format))
 
 (use-package vertico
     :ensure t
@@ -155,8 +203,10 @@
 	  ("M-s d"    .  consult-fd)
 	  ("M-s r"    .  consult-ripgrep)
           ("C-y"      .  consult-yank-from-kill-ring)
+	  ("M-g f"    .  consult-flymake)
+          ("M-g e"    .  consult-compile-error)
           ("C-s"      .  consult-line)))
-
+   
 (use-package auto-virtualenv
    :ensure t
    :defer  t
@@ -168,10 +218,10 @@
 
 (use-package sly
    :ensure t
-   :defer  t)
+   :defer  t
+   :custom (inferior-lisp-program "sbcl"))
 
 (use-package eglot
-   :ensure t
    :defer  t
    :hook ((haskell-mode    . eglot-ensure)
           (c-ts-mode       . eglot-ensure)
@@ -196,20 +246,8 @@
 
 (use-package catppuccin-theme
   :ensure t
+  :custom
+  (catppuccin-flavor 'mocha)
   :init
-  (setq catppuccin-flavor 'mocha)
   (load-theme 'catppuccin :no-confirm))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(rainbow-delimiters moody catppuccin-theme sly haskell-mode pyenv auto-virtualenv)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
