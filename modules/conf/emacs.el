@@ -43,13 +43,34 @@
 (use-package emacs
   :hook ((after-init    . global-auto-revert-mode)
          (after-init    . recentf-mode)
-         (after-init    . savehist-mode)
-         (prog-mode     . auto-fill-mode))
+         (after-init    . savehist-mode))
 
   :bind (("C-z"   . undo-fu-only-undo)
          ("C-S-z" . undo-fu-only-redo))
 
   :init
+
+    (defun set-font-faces ()
+      "Set fonts"
+      (defvar mono-font "Rec Mono Casual-12")
+      (defvar sans-font "Recursive Sans Casual Static-12")
+      (set-face-attribute 'default nil
+                          :height 12
+			  :font mono-font)
+      (set-face-attribute 'mode-line nil
+			  :font mono-font)
+      (set-face-attribute 'mode-line-active nil
+			  :font mono-font)
+      (set-face-attribute 'mode-line-inactive nil
+			  :font mono-font)
+      (set-face-attribute 'variable-pitch nil
+			  :font sans-font))
+
+    (set-font-faces)
+    
+    (if (daemonp)
+        (add-hook 'after-make-frame-functions (lambda (frame) (with-selected-frame frame (set-font-faces)))))
+
     (electric-pair-mode 1)
     (display-time-mode 1)
     (global-display-line-numbers-mode 1)
@@ -60,6 +81,7 @@
     (pixel-scroll-precision-mode)
 
     (setq history-length 25)
+    
     (savehist-mode 1)
     (save-place-mode 1)
     (delete-selection-mode 1)
@@ -71,7 +93,6 @@
     (setq undo-strong-limit (* 96 1024 1024))
     (setq undo-outer-limit (* 90 1024 1024))
 
-    (add-to-list 'default-frame-alist '(font . "Rec Mono Casual-12"))
     (setq fill-column 80)
     (setq frame-resize-pixelwise t)
     (setq split-width-threshold 80)
@@ -89,7 +110,7 @@
     (setopt initial-major-mode 'fundamental-mode)
     (setopt sentence-end-double-space nil)
     (setopt x-underline-at-descent-line nil)
-
+    (setopt pgtk-wait-for-event-timeout 0)
 
     (setq display-line-numbers-width 3)
     (setq left-fringe-width 5)
@@ -117,9 +138,10 @@
           ("C-M-$" . jinx-languages)))
 
 
-(use-package flymake-collection 
-  :ensure t 
-  :hook ((after-init . flymake-collection-hook-setup) 
+(use-package flymake-collection
+  :ensure t
+  :defer  t
+  :hook ((after-init . flymake-collection-hook-setup)
          (emacs-lisp-mode . flymake-mode)))
 
 (use-package treesit-auto
@@ -225,7 +247,8 @@
    :defer  t
    :hook ((haskell-mode    . eglot-ensure)
           (c-ts-mode       . eglot-ensure)
-          (python-ts-mode  . eglot-ensure))
+          (python-ts-mode  . eglot-ensure)
+          (before-save     . eglot-format-buffer))
    :init
      (setq eglot-sync-connect 1
            eglot-connect-timeout 5
