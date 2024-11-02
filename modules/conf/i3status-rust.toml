@@ -14,8 +14,28 @@ block = "time"
 format = " $timestamp.datetime(f:'%a %d/%m %R') "
 interval = 60
 
+
+[[block]]
+block = "sound"
+[[block.click]]
+button = "left"
+cmd = "pavucontrol"
+
+
 [icons]
 icons = "awesome6"
 
 [theme]
-theme = "ctp-mocha"
+theme = "modern"
+[theme.overrides]
+idle_bg = "#FFFFFF"
+idle_fg = "#000000"
+warning_bg = "#c4c4c4"
+warning_fg = "#000000"
+separator = ""
+critical_bg = "#a60000"
+critical_fg = "#000000"
+good_bg = "#e0e0e0"
+good_fg = "#000000"
+info_bg = "#e0e0e0"
+info_fg = "#000000"

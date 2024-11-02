@@ -8,7 +8,7 @@ import System.Directory
 initialKeymap :: [[String]]
 initialKeymap =
   [ (R.riverNormalMap R.Super "Return" $ R.rSpawn "foot")
-  , (R.riverNormalMap R.Super "W" $ R.rSpawn "firefox")
+  , (R.riverNormalMap R.Super "W" $ R.rSpawn "brave")
   , (R.riverNormalMap R.Super "Q" $ R.rClose)
   , (R.riverNormalMap R.SS "E" $ R.rExit)
   , (R.riverNormalMap R.Super "J" $ R.rFocusView R.Next)
@@ -19,7 +19,7 @@ initialKeymap =
   , (R.riverNormalMap R.SA "L" $ R.rMove R.Right "100")
   , (R.riverNormalMap R.SA "J" $ R.rMove R.Down "100")
   , (R.riverNormalMap R.SA "K" $ R.rMove R.Up "100")
-  , (R.riverNormalMap R.Super "Print" $ R.rSpawn "'grim -g \"$(slurp)\" -| wl-copy && notify-send \"Screenshot Clipped\"'")
+  , (R.riverNormalMap R.Super "Print" $ R.rSpawn "'grim -g \"$(slurp)\" -| wl-copy -t image/png && notify-send \"Screenshot Clipped\"'")
   , (R.riverNormalMap R.Super "X" $ R.rSpawn "fuzzel")
   ]
 
@@ -41,8 +41,8 @@ main = do
   for_ [ R.riverSetCursorWarp
        , R.riverFocusFollowsCursor
        , R.riverBackgroundColour "0x002b36"
-       , R.riverBorderColourFocused "0x7287fd"
-       , R.riverBorderColourUnfocused "0xeff1f5"
+       , R.riverBorderColourFocused "0xc4c4c4"
+       , R.riverBorderColourUnfocused "0xe0e0e0"
        , R.riverSetRepeat "50" "250"
        , R.riverDefaultLayout "bsp-layout"
        , R.riverRuleAdd "-app-id 'bar' csd"] R.callRiver

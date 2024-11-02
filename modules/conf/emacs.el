@@ -1,3 +1,6 @@
+;;; package --- init.el
+;;; Commentary:
+
 (defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -43,7 +46,8 @@
 (use-package emacs
   :hook ((after-init    . global-auto-revert-mode)
          (after-init    . recentf-mode)
-         (after-init    . savehist-mode))
+         (after-init    . savehist-mode)
+       	 (prog-mode     . display-line-numbers-mode))
 
   :bind (("C-z"   . undo-fu-only-undo)
          ("C-S-z" . undo-fu-only-redo))
@@ -56,15 +60,22 @@
       (defvar sans-font "Recursive Sans Casual Static-12")
       (set-face-attribute 'default nil
                           :height 12
-			  :font mono-font)
+                  	  :font mono-font
+			  :weight 'medium)
+      
       (set-face-attribute 'mode-line nil
-			  :font mono-font)
+                  	  :font mono-font
+                          :weight 'bold)
+      
       (set-face-attribute 'mode-line-active nil
-			  :font mono-font)
+                       	  :font mono-font
+                          :weight 'bold)
+      
       (set-face-attribute 'mode-line-inactive nil
-			  :font mono-font)
+                  	  :font mono-font)
+      
       (set-face-attribute 'variable-pitch nil
-			  :font sans-font))
+                  	  :font sans-font))
 
     (set-font-faces)
     
@@ -73,7 +84,6 @@
 
     (electric-pair-mode 1)
     (display-time-mode 1)
-    (global-display-line-numbers-mode 1)
     (scroll-bar-mode 0)
     (tool-bar-mode 0)
     (menu-bar-mode 0)
@@ -88,8 +98,14 @@
     (electric-indent-mode 1)
     (global-auto-revert-mode 1)
 
+    (setq custom-file (locate-user-emacs-file "custom-vars.el"))
+    (load custom-file 'noerror 'nomessage)
+    
+
     (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
     (setq undo-limit (* 64 1024 1024)) ; 64 mb
+    (setq read-process-output-max (* 1024 1024 4))
+    
     (setq undo-strong-limit (* 96 1024 1024))
     (setq undo-outer-limit (* 90 1024 1024))
 
@@ -97,14 +113,21 @@
     (setq frame-resize-pixelwise t)
     (setq split-width-threshold 80)
     (setq create-lockfiles nil)
+    (setq initial-scratch-message "")
+    
     (setq make-backup-files nil)
+    (setq auto-save-list-file-prefix "~/.config/emacs/autosave/")
+    (setq auto-save-file-name-transforms '((".*" "~/.config/emacs/autosave" t)))
     (setq inhibit-startup-message t)
     (setq load-prefer-newer t)
     (setq select-enable-clipboard t)
     (setq confirm-nonexistent-file-or-buffer t)
     (setq fast-but-imprecise-scrolling t)
     (setq auto-save-default t)
+    (setq use-short-answers t)
+    (setq warning-minimum-level :emergency)
 
+    
     (setopt auto-revert-avoid-polling t)
     (setopt auto-revert-interval 5)
     (setopt initial-major-mode 'fundamental-mode)
@@ -123,6 +146,8 @@
     (setq inhibit-startup-echo-area-message (user-login-name))
     (setq tab-always-indent 'complete)
     (setq read-extended-command-predicate #'command-completion-default-include-p))
+
+    
 
     (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
 
@@ -151,7 +176,7 @@
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (global-treesit-auto-mode 1))
 
 (use-package rainbow-delimiters
    :ensure t
@@ -181,13 +206,13 @@
    :defer  t
    :custom
    (corfu-auto t)
-   (corfu-preselect 'prompt)
+   (corfu-preselect 'first)
    (corfu-cycle t)
    (corfu-popupinfo-delay '(0.8 . 0.8))
  
    :init
-   (global-corfu-mode)
-   (corfu-popupinfo-mode))
+   (global-corfu-mode 1)
+   (corfu-popupinfo-mode 1))
 
 (use-package kind-icon
    :ensure t
@@ -206,15 +231,42 @@
    :defer  t
    :init (marginalia-mode))
 
-(use-package modusregel
-   :ensure (:host github :repo "jjba23/modusregel" :branch "trunk")
-   :config
-   (setq-default mode-line-format modusregel-format))
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode)
+  :custom
+  (doom-modeline-project-detection 'auto)
+  (doom-modeline-height 25)
+  (doom-modeline-bar-width 1)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-icon t)
+  (doom-modeline-major-mode-color-icon t)
+  (doom-modeline-buffer-state-icon t)
+  (doom-modeline-buffer-modification-icon t)
+  (doom-modeline-minor-modes nil)
+  (doom-modeline-enable-word-count nil)
+  (doom-modeline-buffer-encoding t)
+  (doom-modeline-indent-info nil)
+  (doom-modeline-checker-simple-format t)
+  (doom-modeline-vcs-max-length 12)
+  (doom-modeline-env-version t)
+  (doom-modeline-irc-stylize 'identity)
+  (doom-modeline-github-timer nil)
+  (doom-modeline-gnus-timer nil))
+
+(use-package nerd-icons
+  :ensure t
+  :defer  t)
+
+(use-package modus-themes
+  :ensure t
+  :defer  t
+  :init (load-theme 'modus-operandi-tritanopia :no-confirm))
 
 (use-package vertico
     :ensure t
     :defer  t
-    :init (vertico-mode))
+    :init (vertico-mode t))
 
 (use-package consult
    :ensure t
@@ -222,7 +274,7 @@
    :hook (completion-list-mode . consult-preview-at-point-mode)
    :bind (("C-x b"    .  consult-buffer)
           ("M-g M-g"  .  consult-goto-line)
-	  ("M-s d"    .  consult-fd)
+      	  ("M-s d"    .  consult-fd)
 	  ("M-s r"    .  consult-ripgrep)
           ("C-y"      .  consult-yank-from-kill-ring)
 	  ("M-g f"    .  consult-flymake)
@@ -247,16 +299,13 @@
    :defer  t
    :hook ((haskell-mode    . eglot-ensure)
           (c-ts-mode       . eglot-ensure)
-          (python-ts-mode  . eglot-ensure)
-          (before-save     . eglot-format-buffer))
+          (python-ts-mode  . eglot-ensure))
+
    :init
      (setq eglot-sync-connect 1
            eglot-connect-timeout 5
            eglot-autoshutdown t
-           eglot-send-changes-idle-time 45
-           jsonrpc-event-hook nil)
-
-     (fset #'jsonrpc--log-event #'ignore)
+           eglot-send-changes-idle-time 45)
 
      (setq completion-category-overrides '((eglot (styles orderless))
                                            (eglot-capf (styles orderless)))
@@ -266,11 +315,5 @@
                                               (splice (globalOn . :json-false))
                                               (eval (globalOn . :json-false)))
                                               (formattingProvider "fourmolu")))))
-
-(use-package catppuccin-theme
-  :ensure t
-  :custom
-  (catppuccin-flavor 'mocha)
-  :init
-  (load-theme 'catppuccin :no-confirm))
-
+(provide 'init)
+;;; init.el ends here
