@@ -40,15 +40,13 @@ main = do
 
   for_ [ R.riverSetCursorWarp
        , R.riverFocusFollowsCursor
-       , R.riverBackgroundColour "0x002b36"
+       , R.riverBackgroundColour "0xffffff"
        , R.riverBorderColourFocused "0xc4c4c4"
        , R.riverBorderColourUnfocused "0xe0e0e0"
        , R.riverSetRepeat "50" "250"
-       , R.riverDefaultLayout "bsp-layout"
+       , R.riverDefaultLayout "wideriver"
        , R.riverRuleAdd "-app-id 'bar' csd"] R.callRiver
 
-  wallpaperscript <- getXdgDirectory XdgConfig "river/wallpaper.fish"
-  R.callExternal wallpaperscript []
-  R.callExternal "river-bsp-layout" ["--inner-gap","3", "--outer-gap", "7", "--split-perc", "0.5"] 
+  R.callExternal "wideriver" ["--layout", "left", "--stack", "dwindle","--count", "1", "--ratio", "0.5", "--outer-gaps", "4"] 
   R.callExternal "i3bar-river" []
 
