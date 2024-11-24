@@ -49,9 +49,6 @@
          (after-init    . savehist-mode)
        	 (prog-mode     . display-line-numbers-mode))
 
-  :bind (("C-z"   . undo-fu-only-undo)
-         ("C-S-z" . undo-fu-only-redo))
-
   :init
 
     (defun set-font-faces ()
@@ -171,7 +168,7 @@
 
 (use-package treesit-auto
   :ensure  t
-  :defer   t
+  :defer   4
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -180,13 +177,13 @@
 
 (use-package rainbow-delimiters
    :ensure t
-   :defer  t
    :hook (prog-mode  . rainbow-delimiters-mode))
 
 
 (use-package exec-path-from-shell
    :ensure t
-   :defer  t)
+   :defer  2
+   :init (exec-path-from-shell-initialize))
 
 (use-package project
    :defer  t
@@ -195,28 +192,30 @@
 
 (use-package undo-fu
    :ensure t
-   :defer  t)
+   :bind ("C-z" . undo-fu-only-undo)
+         ("C-S-z" . undo-fy-only-redo))
 
 (use-package elpher
    :ensure t
-   :defer  t)
+   :commands (elpher))
 
 (use-package corfu
    :ensure t
-   :defer  t
+   :defer  2
    :custom
    (corfu-auto t)
    (corfu-preselect 'first)
    (corfu-cycle t)
    (corfu-popupinfo-delay '(0.8 . 0.8))
- 
+   (corfu-quit-no-match 'separator)
+   :config
+   (keymap-unset corfu-map "RET")
    :init
    (global-corfu-mode 1)
    (corfu-popupinfo-mode 1))
 
 (use-package kind-icon
    :ensure t
-   :defer  t
    :after corfu
    :config (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
@@ -228,7 +227,7 @@
 
 (use-package marginalia
    :ensure t
-   :defer  t
+   :defer  2
    :init (marginalia-mode))
 
 (use-package doom-modeline
@@ -256,7 +255,7 @@
 
 (use-package nerd-icons
   :ensure t
-  :defer  t)
+  :defer  2)
 
 (use-package modus-themes
   :ensure t
@@ -264,9 +263,9 @@
   :init (load-theme 'modus-operandi-tritanopia :no-confirm))
 
 (use-package vertico
-    :ensure t
-    :defer  t
-    :init (vertico-mode t))
+  :ensure t
+  :defer  t
+  :init (vertico-mode))
 
 (use-package consult
    :ensure t
@@ -294,6 +293,15 @@
    :ensure t
    :defer  t
    :custom (inferior-lisp-program "sbcl"))
+
+(use-package geiser-guile
+  :ensure  t)
+
+(use-package puni
+  :ensure  t
+  :defer   2
+  :init
+  (puni-global-mode))
 
 (use-package eglot
    :defer  t
